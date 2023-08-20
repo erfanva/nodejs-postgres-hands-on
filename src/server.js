@@ -1,6 +1,6 @@
-'use strict';
 const express = require('express');
-const { Pool, Client } = require('pg');
+// const { Pool, Client } = require('pg');
+const db = require('./db/index.js')
 
 // Constants
 const PORT = 3000;
@@ -12,17 +12,8 @@ app.get('/', (req, res) => {
   fetchNow().then(now => res.send(now));
 });
 
-const client = new Client({
-  user: 'me',
-  host: '127.0.0.1',
-  database: 'api',
-  password: 'password',
-  port: 5432,
-});
-
 async function fetchNow() { 
-  await client.connect()
-  return await client.query('SELECT NOW()')
+  return await db.query('SELECT NOW()')
 }
 
 app.listen(PORT, HOST);
