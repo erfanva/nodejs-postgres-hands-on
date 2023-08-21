@@ -1,6 +1,8 @@
 
 const { Pool } = require('pg');
 
+const migrations = require('./migrations/index')
+
 const pool = new Pool({
   user: config.db.user,
   host: config.db.host,
@@ -15,6 +17,10 @@ pool.on('error', (err, client) => {
 })
 
 module.exports = { 
+  migrate: async () => {
+    console.log('[DB] migrating...')
+    migrations.migrate_all()
+  },
   query: async (text, params) => {
     const start = Date.now()
     const res = await pool.query(text, params)

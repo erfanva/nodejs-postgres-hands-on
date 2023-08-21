@@ -7,14 +7,14 @@ router.use((req, res, next) => {
 })
 
 router.get('/', (req, res) => {
-    fetchFacts().then(r => res.send(r.rows))
+    fetch_facts().then(r => res.send(r.rows))
 })
 
-async function fetchNow() { 
+async function fetch_now() { 
     return await db.query('SELECT NOW()')
 }
 
-async function fetchFacts() { 
+async function fetch_facts() { 
     return await db.query('SELECT * FROM facts')
 }
 

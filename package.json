@@ -10,6 +10,7 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.18",
-    "pg": "^8.11"
+    "pg": "^8.11",
+    "pg-format": "^1.0.4"
   }
 }

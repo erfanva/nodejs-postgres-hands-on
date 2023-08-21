@@ -2,6 +2,7 @@ const express = require('express')
 
 config = require('./config.js')
 db = require('./db/index.js')
+db.migrate()
 const routes = require('./routes/index.js')
 
 // App
