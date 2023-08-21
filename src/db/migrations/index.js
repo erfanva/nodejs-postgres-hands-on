@@ -5,6 +5,26 @@ async function drop_all() {
     await db.query(query)
 }
 
+async function migrate_costumers() {
+    const create_query = `
+        CREATE TABLE IF NOT EXISTS costumers
+        (
+            id SERIAL,
+            PRIMARY KEY(id),
+            name varchar(30) NOT NULL,
+            created_at timestamp default current_timestamp
+        );`
+    const emptiness_check_query = `SELECT * FROM costumers LIMIT 1`;
+    const insert_query = `
+        INSERT INTO costumers(name)
+        VALUES %L;`
+    const agents = [['reza coustumer'], ['sara coustumer'], ['shayan coustumer']]
+
+    await db.query(create_query)
+    if((await db.query(emptiness_check_query)).rowCount == 0) 
+        await db.query(format(insert_query, agents))
+}
+
 async function migrate_agents() {
     const create_query = `
         CREATE TABLE IF NOT EXISTS agents
@@ -18,7 +38,7 @@ async function migrate_agents() {
     const insert_query = `
         INSERT INTO agents(name)
         VALUES %L;`
-    const agents = [['ali'], ['mina'], ['saman']]
+    const agents = [['ali agent'], ['mina agent'], ['saman agent']]
 
     await db.query(create_query)
     if((await db.query(emptiness_check_query)).rowCount == 0) 
@@ -51,6 +71,7 @@ async function migrate_orders() {
         (
             id SERIAL,
             PRIMARY KEY(id),
+            costumer_id integer REFERENCES costumers (id) NOT NULL,
             vendor_id integer REFERENCES vendors (id) NOT NULL,
             delivery_time integer,
             created_at timestamp default current_timestamp
@@ -62,6 +83,7 @@ module.exports = {
     drop_all: drop_all,
     migrate_all: async () => {
         await migrate_agents()
+        await migrate_costumers()
         await migrate_vendors()
         await migrate_orders()
     }
