@@ -1,4 +1,4 @@
-const delay_report = require('./delay_report')
+const delay_report = require('./delay_report/index')
 const orders = require('./orders')
 
 module.exports = {

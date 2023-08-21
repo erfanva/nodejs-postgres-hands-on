@@ -3,11 +3,11 @@ const axios = require('axios')
 const router = express.Router()
 
 router.use((req, res, next) => {
-  console.log('[router::delayReport]')
+  console.log('[router::delayReport::costumer]')
   next()
 })
 
-router.post('/costumer/order', async (req, res) => {
+router.post('/order', async (req, res) => {
     try {
         const order_id = parseInt(req.body.order_id); 
         const costumer_id = 1;//parseInt(req.body.costumer_id);
@@ -50,7 +50,7 @@ router.post('/costumer/order', async (req, res) => {
     }
 })
 
-router.get('/costumer/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     const costumer_id = 1;//req.params.id
     get_costumer(costumer_id).then(r => res.send(r.rows))
 })
