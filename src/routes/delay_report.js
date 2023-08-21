@@ -22,6 +22,18 @@ router.post('/costumer/order', async (req, res) => {
 
     if (remaining_time >= 0) {
         res.status(403).send({message: "This order is'nt delayed yet.", remaining_time})
+        return;
+    }
+    const trip_of_order = get_trip_of_order(order_id)
+    if (typeof(trip_of_order) != 'object' ||
+         !['ASSIGNED', 'AT_VENDOR', 'PICKED'].includes(trip_of_order.status)) {
+        // save report + queue 
+        res.send({message: "Queued"})
+        return;
+    } else {
+        // save report + update delivery time + respond new delivery time
+        res.send({message: "New delivery time"})
+        return;
     }
 })
 
@@ -40,6 +52,13 @@ async function get_order(costumer_id, order_id) {
     WHERE id = $1 AND costumer_id = $2;`
 
     return (await db.query(select_query, [order_id, costumer_id])).rows[0]
+}
+async function get_trip_of_order(order_id) {
+    const select_query = `
+    SELECT id, status, created_at FROM trips
+    WHERE order_id = $1;`
+
+    return (await db.query(select_query, [order_id])).rows[0]
 }
 async function get_costumer(costumer_id) {
     const select_query = `
