@@ -3,7 +3,7 @@ const orders = require('./orders')
 
 module.exports = {
     config: (app) => {
-        app.use('/delay_report', delay_report);
+        app.use('/delayReport', delay_report);
         app.use('/orders', orders);
     }
 }
