@@ -14,13 +14,16 @@ async function migrate_costumers() {
             name varchar(30) NOT NULL,
             created_at timestamp default current_timestamp
         );`
+        await db.query(create_query)
+
+    // sample data
     const emptiness_check_query = `SELECT * FROM costumers LIMIT 1`;
     const insert_query = `
         INSERT INTO costumers(name)
         VALUES %L;`
     const agents = [['reza coustumer'], ['sara coustumer'], ['shayan coustumer']]
 
-    await db.query(create_query)
+    
     if((await db.query(emptiness_check_query)).rowCount == 0) 
         await db.query(format(insert_query, agents))
 }
@@ -34,13 +37,16 @@ async function migrate_agents() {
             name varchar(30) NOT NULL,
             created_at timestamp default current_timestamp
         );`
+    await db.query(create_query)
+
+    // sample data
     const emptiness_check_query = `SELECT * FROM agents LIMIT 1`;
     const insert_query = `
         INSERT INTO agents(name)
         VALUES %L;`
     const agents = [['ali agent'], ['mina agent'], ['saman agent']]
 
-    await db.query(create_query)
+    
     if((await db.query(emptiness_check_query)).rowCount == 0) 
         await db.query(format(insert_query, agents))
 }
@@ -54,13 +60,16 @@ async function migrate_vendors() {
             name varchar(30) NOT NULL,
             created_at timestamp default current_timestamp
         );`
+    await db.query(create_query)
+
+    // sample data
     const emptiness_check_query = `SELECT * FROM vendors LIMIT 1`;
     const insert_query = `
         INSERT INTO vendors(name)
         VALUES %L;`
     const vendors = [['halal food'], ['sib360'], ['mohsen']]
 
-    await db.query(create_query)
+    
     if((await db.query(emptiness_check_query)).rowCount == 0) 
         await db.query(format(insert_query, vendors))
 }
@@ -94,6 +103,30 @@ async function migrate_delay_reports() {
     await db.query(create_query)
 }
 
+async function migrate_trips() {
+    const create_query = `
+        CREATE TABLE IF NOT EXISTS trips
+        (
+            id SERIAL,
+            PRIMARY KEY(id),
+            order_id integer REFERENCES orders (id) NOT NULL UNIQUE,
+            status varchar(25),
+            created_at timestamp default current_timestamp
+        );`
+    await db.query(create_query)
+
+    // sample data
+    const emptiness_check_query = `SELECT * FROM trips LIMIT 1`;
+    const insert_query = `
+        INSERT INTO trips(order_id, status)
+        VALUES %L;`
+    const vendors = [[1, 'ASSIGNED'], [2, 'DELIVEDRED'], [3, 'AT_VENDOR'], [4, 'PICKED'], [5, null]]
+
+    
+    if((await db.query(emptiness_check_query)).rowCount == 0) 
+        await db.query(format(insert_query, vendors))
+}
+
 module.exports = {
     drop_all: drop_all,
     migrate_all: async () => {
@@ -102,5 +135,6 @@ module.exports = {
         await migrate_vendors()
         await migrate_orders()
         await migrate_delay_reports()
+        await migrate_trips()
     }
 }
