@@ -12,6 +12,6 @@ router.use((req, res, next) => {
 
 // router.use('/agent', agent)
 router.use('/costumer', costumer)
-// router.use('/vendor', vendor)
+router.use('/vendor', vendor)
 
 module.exports = router
