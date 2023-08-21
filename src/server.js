@@ -4,8 +4,8 @@ config = require('./config.js')
 db = require('./db/index.js')
 const routes = require('./routes/index.js')
 async function start_db() {
-    if (config.app.is_developing)
-        await db.drop_all()
+    // if (config.app.is_developing)
+    //     await db.drop_all()
     await db.migrate()
 }
 start_db()
