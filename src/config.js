@@ -4,6 +4,7 @@ module.exports = {
     app: {
         host: process.env.host || '0.0.0.0',
         port: process.env.port || 3000,
+        is_developing: true,
     },
     db: {
         user: 'me',

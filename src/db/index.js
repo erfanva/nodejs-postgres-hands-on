@@ -17,6 +17,7 @@ pool.on('error', (err, client) => {
 })
 
 module.exports = { 
+  drop_all: migrations.drop_all,
   migrate: async () => {
     console.log('[DB] migrating...')
     migrations.migrate_all()

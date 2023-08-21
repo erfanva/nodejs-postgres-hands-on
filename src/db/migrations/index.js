@@ -1,12 +1,18 @@
 const format = require('pg-format');
 
+async function drop_all() {
+    const query = `DROP TABLE IF EXISTS agents, vendors, orders;`
+    await db.query(query)
+}
+
 async function migrate_agents() {
     const create_query = `
         CREATE TABLE IF NOT EXISTS agents
         (
             id SERIAL,
             PRIMARY KEY(id),
-            name varchar(30) NOT NULL
+            name varchar(30) NOT NULL,
+            created_at timestamp default current_timestamp
         );`
     const emptiness_check_query = `SELECT * FROM agents LIMIT 1`;
     const insert_query = `
@@ -25,17 +31,18 @@ async function migrate_vendors() {
         (
             id SERIAL,
             PRIMARY KEY(id),
-            name varchar(30) NOT NULL
+            name varchar(30) NOT NULL,
+            created_at timestamp default current_timestamp
         );`
     const emptiness_check_query = `SELECT * FROM vendors LIMIT 1`;
     const insert_query = `
         INSERT INTO vendors(name)
         VALUES %L;`
-    const agents = [['halal food'], ['sib360'], ['mohsen']]
+    const vendors = [['halal food'], ['sib360'], ['mohsen']]
 
     await db.query(create_query)
     if((await db.query(emptiness_check_query)).rowCount == 0) 
-        await db.query(format(insert_query, agents))
+        await db.query(format(insert_query, vendors))
 }
 
 async function migrate_orders() {
@@ -44,16 +51,18 @@ async function migrate_orders() {
         (
             id SERIAL,
             PRIMARY KEY(id),
-            vendor_id integer REFERENCES vendors (id),
-            delivery_time integer
+            vendor_id integer REFERENCES vendors (id) NOT NULL,
+            delivery_time integer,
+            created_at timestamp default current_timestamp
         );`
     await db.query(create_query)
 }
 
 module.exports = {
-    migrate_all: () => {
-        migrate_agents()
-        migrate_vendors()
-        migrate_orders()
+    drop_all: drop_all,
+    migrate_all: async () => {
+        await migrate_agents()
+        await migrate_vendors()
+        await migrate_orders()
     }
 }

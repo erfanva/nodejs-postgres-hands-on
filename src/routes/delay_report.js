@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 router.use((req, res, next) => {
-  console.log('[Delay Report]')
+  console.log('[router::delay_report]')
   next()
 })
 
