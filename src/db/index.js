@@ -2,11 +2,11 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  user: 'me',
-  host: '127.0.0.1',
-  database: 'api',
-  password: 'password',
-  port: 5432,
+  user: config.db.user,
+  host: config.db.host,
+  database: config.db.database,
+  password: config.db.password,
+  port: config.db.port,
 })
 
 pool.on('error', (err, client) => {
