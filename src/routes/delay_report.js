@@ -10,7 +10,7 @@ router.post('/costumer/order', async (req, res) => {
     const order_id = parseInt(req.body.order_id); 
     const costumer_id = 1;//parseInt(req.body.costumer_id);
     const order = await get_order(costumer_id, order_id)
-    if (typeof(order) != 'object') {
+    if (!order) {
         res.status(404).send({err: "Order not found!"})
         return;
     }
@@ -24,11 +24,11 @@ router.post('/costumer/order', async (req, res) => {
         res.status(403).send({message: "This order is'nt delayed yet.", remaining_time})
         return;
     }
-    const trip_of_order = get_trip_of_order(order_id)
-    if (typeof(trip_of_order) != 'object' ||
+    const trip_of_order = await get_trip_of_order(order_id)
+    if (!trip_of_order ||
          !['ASSIGNED', 'AT_VENDOR', 'PICKED'].includes(trip_of_order.status)) {
         // save report + queue 
-        res.send({message: "Queued"})
+        res.send({message: "Queued", trip: trip_of_order})
         return;
     } else {
         // save report + update delivery time + respond new delivery time
@@ -50,15 +50,17 @@ async function get_order(costumer_id, order_id) {
     const select_query = `
     SELECT id, delivery_time, created_at FROM orders
     WHERE id = $1 AND costumer_id = $2;`
+    const result = await db.query(select_query, [order_id, costumer_id])
 
-    return (await db.query(select_query, [order_id, costumer_id])).rows[0]
+    return result.rowCount > 0 ? result.rows[0] : null
 }
 async function get_trip_of_order(order_id) {
     const select_query = `
     SELECT id, status, created_at FROM trips
     WHERE order_id = $1;`
+    const result = await db.query(select_query, [order_id])
 
-    return (await db.query(select_query, [order_id])).rows[0]
+    return result.rowCount > 0 ? result.rows[0] : null
 }
 async function get_costumer(costumer_id) {
     const select_query = `
