@@ -103,6 +103,33 @@ async function migrate_delay_reports() {
     await db.query(create_query)
 }
 
+async function migrate_delay_reports_queue() {
+    const create_query = `
+        CREATE TABLE IF NOT EXISTS delay_reports_queue
+        (
+            id SERIAL,
+            PRIMARY KEY(id),
+            order_id integer UNIQUE REFERENCES orders (id) NOT NULL,
+            queued_at timestamp default current_timestamp
+        );`
+    await db.query(create_query)
+}
+
+async function migrate_delay_report_assignments() {
+    const create_query = `
+        CREATE TABLE IF NOT EXISTS delay_report_assignments
+        (
+            id SERIAL,
+            PRIMARY KEY(id),
+            order_id integer UNIQUE REFERENCES orders (id) NOT NULL,
+            agent_id integer REFERENCES agents (id) NOT NULL,
+            status varchar(25), 
+            assigned_at timestamp default current_timestamp,
+            updated_at timestamp default current_timestamp
+        );`
+    await db.query(create_query)
+}
+
 async function migrate_trips() {
     const create_query = `
         CREATE TABLE IF NOT EXISTS trips
@@ -135,6 +162,8 @@ module.exports = {
         await migrate_vendors()
         await migrate_orders()
         await migrate_delay_reports()
+        await migrate_delay_reports_queue()
+        await migrate_delay_report_assignments()
         await migrate_trips()
     }
 }

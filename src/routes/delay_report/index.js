@@ -10,7 +10,7 @@ router.use((req, res, next) => {
   next()
 })
 
-// router.use('/agent', agent)
+router.use('/agent', agent)
 router.use('/costumer', costumer)
 router.use('/vendor', vendor)
 
