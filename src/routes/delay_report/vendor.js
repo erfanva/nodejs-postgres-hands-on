@@ -1,5 +1,4 @@
 const express = require('express')
-const axios = require('axios')
 const router = express.Router()
 
 router.use((req, res, next) => {
@@ -8,8 +7,9 @@ router.use((req, res, next) => {
 })
 
 router.get('/:id', (req, res) => {
+    const vendor_id = req.params.id
+    if (!vendor_id) return res.status(400).send({message: "vendor_id?"})
     try {
-        const vendor_id = req.params.id
         get_delay_reports(vendor_id).then(r => res.send(r.rows))
     } catch (e) {
         res.status(500).send({status: "ERROR", error: e})
