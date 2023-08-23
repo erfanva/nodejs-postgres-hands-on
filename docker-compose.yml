@@ -6,12 +6,8 @@ services:
     build: .
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: postgres://user:pass@postgres:5432/db
-      NODE_ENV: development
-      PORT: 3000
     ports:
-      - "3000:3000"
+      - "3000:${app_port}"
     # command: npm run dev
     volumes:
       - .:/app/
@@ -20,8 +16,8 @@ services:
   postgres:
     image: postgres:11
     ports:
-      - "35432:5432"
+      - "35432:${db_port}"
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: db
+      POSTGRES_USER: ${db_user}
+      POSTGRES_PASSWORD: ${db_pass}
+      POSTGRES_DB: ${db_name}
