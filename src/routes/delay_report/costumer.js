@@ -9,8 +9,11 @@ router.use((req, res, next) => {
 
 router.post('/order', async (req, res) => {
     try {
-        const order_id = parseInt(req.body.order_id); 
-        const costumer_id = 1;//parseInt(req.body.costumer_id);
+        const order_id = req.body.order_id; 
+        const costumer_id = req.body.costumer_id;
+        if (!order_id || !costumer_id) 
+            return res.status(400).send({message: 'order_id? costumer_id?'})
+
         const order = await get_order(costumer_id, order_id)
         if (!order) {
             res.status(404).send({err: "Order not found!"})
@@ -54,11 +57,6 @@ router.post('/order', async (req, res) => {
         res.status(500).send({status: "ERROR", error: e})
         return;
     }
-})
-
-router.get('/:id', (req, res) => {
-    const costumer_id = 1;//req.params.id
-    get_costumer(costumer_id).then(r => res.send(r.rows))
 })
 
 async function is_order_delay_report_assigned_and_not_resolved(order_id) {
@@ -106,13 +104,6 @@ async function get_trip_of_order(order_id) {
     const result = await db.query(select_query, [order_id])
 
     return result.rowCount > 0 ? result.rows[0] : null
-}
-async function get_costumer(costumer_id) {
-    const select_query = `
-    SELECT id, name, created_at FROM costumers
-    WHERE id = $1;`
-  
-    return db.query(select_query, [costumer_id])
 }
 async function save_delay_report(order_id, costumer_id, trip_status, delay) {
     const insert_query = `
