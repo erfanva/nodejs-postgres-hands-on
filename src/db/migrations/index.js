@@ -1,7 +1,15 @@
 const format = require('pg-format');
 
 async function drop_all() {
-    const query = `DROP TABLE IF EXISTS costumers, agents, vendors, orders, delay_reports;`
+    const query = `DROP TABLE IF EXISTS 
+        costumers, 
+        agents, 
+        vendors, 
+        orders, 
+        delay_reports, 
+        delay_reports_queue, 
+        delay_report_assignments,
+        trips;`
     await db.query(query)
 }
 
@@ -86,6 +94,16 @@ async function migrate_orders() {
             created_at timestamp default current_timestamp
         );`
     await db.query(create_query)
+
+    // sample data
+    const emptiness_check_query = `SELECT * FROM orders LIMIT 1`;
+    const insert_query = `
+        INSERT INTO orders(costumer_id, vendor_id, delivery_time)
+        VALUES %L;`
+    const orders = [[1, 1, 10], [1, 1, 20], [1, 2, 30], [1, 2, 50], [2, 1, 30]]
+
+    if((await db.query(emptiness_check_query)).rowCount == 0) 
+        await db.query(format(insert_query, orders))
 }
 
 async function migrate_delay_reports() {
@@ -148,7 +166,6 @@ async function migrate_trips() {
         INSERT INTO trips(order_id, status)
         VALUES %L;`
     const vendors = [[1, 'ASSIGNED'], [2, 'DELIVEDRED'], [3, 'AT_VENDOR'], [4, 'PICKED'], [5, null]]
-
     
     if((await db.query(emptiness_check_query)).rowCount == 0) 
         await db.query(format(insert_query, vendors))

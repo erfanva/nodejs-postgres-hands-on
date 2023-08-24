@@ -8,6 +8,8 @@ services:
       - postgres
     ports:
       - "3000:${app_port}"
+    environment:
+      db_host: "postgres"
     # command: npm run dev
     volumes:
       - .:/app/
